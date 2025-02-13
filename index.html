@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -109,6 +109,364 @@
 
             tg.sendData(JSON.stringify(data));
         });
+    </script>
+</body>
+</html> -->
+
+<!-- <!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Mini Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .balance {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .clicker {
+            width: 100px;
+            height: 100px;
+            background: orange;
+            border-radius: 50%;
+            display: inline-block;
+            font-size: 20px;
+            line-height: 100px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .btn {
+            display: block;
+            width: 80%;
+            margin: 10px auto;
+            padding: 10px;
+            font-size: 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:disabled {
+            background: gray;
+        }
+
+        .leaderboard {
+            margin-top: 20px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>💰 Mini Game в Telegram</h2>
+        <div class="balance">Баланс: <span id="balance">0</span> 💰</div>
+        <div class="clicker" id="clicker">+1</div>
+        <button class="btn" id="upgrade1">Улучшение 1 (+2💰) — 10 монет</button>
+        <button class="btn" id="upgrade2">Улучшение 2 (+5💰) — 50 монет</button>
+        <button class="btn" id="save">💾 Сохранить</button>
+        <h3>🏆 Рейтинг игроков:</h3>
+        <div class="leaderboard" id="leaderboard">Загрузка...</div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+
+        // Получение данных пользователя из Telegram API
+        const user = tg.initDataUnsafe.user;
+        const userId = user ? user.id : "guest";
+
+        // Загрузка сохранённых данных
+        let balance = parseInt(localStorage.getItem(`balance_${userId}`)) || 0;
+        let clickValue = parseInt(localStorage.getItem(`clickValue_${userId}`)) || 1;
+
+        const clicker = document.getElementById('clicker');
+        const balanceEl = document.getElementById('balance');
+        const upgrade1 = document.getElementById('upgrade1');
+        const upgrade2 = document.getElementById('upgrade2');
+        const saveButton = document.getElementById('save');
+        const leaderboard = document.getElementById('leaderboard');
+
+        function updateBalance() {
+            balanceEl.textContent = balance;
+            upgrade1.disabled = balance < 10;
+            upgrade2.disabled = balance < 50;
+        }
+
+        // Кликер
+        clicker.addEventListener('click', () => {
+            balance += clickValue;
+            updateBalance();
+        });
+
+        // Улучшение 1 (+2 к клику)
+        upgrade1.addEventListener('click', () => {
+            if (balance >= 10) {
+                balance -= 10;
+                clickValue += 1;
+                updateBalance();
+            }
+        });
+
+        // Улучшение 2 (+5 к клику)
+        upgrade2.addEventListener('click', () => {
+            if (balance >= 50) {
+                balance -= 50;
+                clickValue += 5;
+                updateBalance();
+            }
+        });
+
+        // Сохранение данных
+        saveButton.addEventListener('click', () => {
+            localStorage.setItem(`balance_${userId}`, balance);
+            localStorage.setItem(`clickValue_${userId}`, clickValue);
+            sendDataToBot();
+            alert('Прогресс сохранён!');
+        });
+
+        // Отправка данных в бота для рейтинга
+        function sendDataToBot() {
+            fetch(`https://your-telegram-bot-api/save_score?user_id=${userId}&balance=${balance}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Данные отправлены в бота:', data);
+                    loadLeaderboard();
+                })
+                .catch(error => console.error('Ошибка при отправке:', error));
+        }
+
+        // Загрузка рейтинга
+        function loadLeaderboard() {
+            fetch('https://your-telegram-bot-api/get_leaderboard')
+                .then(response => response.json())
+                .then(data => {
+                    leaderboard.innerHTML = data.map(player => `<p>${player.name}: ${player.score} 💰</p>`).join('');
+                })
+                .catch(error => {
+                    console.error('Ошибка загрузки рейтинга:', error);
+                    leaderboard.innerHTML = 'Ошибка загрузки рейтинга';
+                });
+        }
+
+        // Инициализация игры
+        updateBalance();
+        loadLeaderboard();
+        tg.ready();
+    </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Mini Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .active-tab {
+            display: block;
+        }
+
+        .balance {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .level {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .clicker {
+            width: 100px;
+            height: 100px;
+            background: orange;
+            border-radius: 50%;
+            display: inline-block;
+            font-size: 20px;
+            line-height: 100px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .btn {
+            display: block;
+            width: 80%;
+            margin: 10px auto;
+            padding: 10px;
+            font-size: 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:disabled {
+            background: gray;
+        }
+
+        .tab-buttons {
+            display: flex;
+            justify-content: space-around;
+            background: #ddd;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .tab-button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+        }
+
+        .leaderboard {
+            margin-top: 20px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Главная страница -->
+        <div id="tab-main" class="tab-content active-tab">
+            <h2>💰 Mini Game в Telegram</h2>
+            <div class="balance">Баланс: <span id="balance">0</span> 💰</div>
+            <div class="level">Уровень: <span id="level">1</span></div>
+            <div class="clicker" id="clicker">+1</div>
+            <button class="btn" id="upgrade1">Улучшение 1 (+2💰) — 10 монет</button>
+            <button class="btn" id="upgrade2">Улучшение 2 (+5💰) — 50 монет</button>
+            <button class="btn" id="challenge">⚔️ Вызов PvP</button>
+            <button class="btn" id="save">💾 Сохранить</button>
+            <h3>🏆 Рейтинг игроков:</h3>
+            <div class="leaderboard" id="leaderboard">Загрузка...</div>
+        </div>
+
+        <!-- Вкладка "Боссы" -->
+        <div id="tab-bosses" class="tab-content">
+            <h2>⚔️ Битвы с боссами</h2>
+            <p>Выберите босса для сражения!</p>
+            <button class="btn" id="fightBoss1">🐲 Дракон (50 HP)</button>
+            <button class="btn" id="fightBoss2">👹 Тролль (100 HP)</button>
+            <div id="bossResult"></div>
+        </div>
+
+        <!-- Вкладка "Магазин" -->
+        <div id="tab-shop" class="tab-content">
+            <h2>🛒 Магазин</h2>
+            <p>Купите предметы для улучшений!</p>
+            <button class="btn" id="buyItem1">🔹 Зелье силы (+10 урон) — 20 монет</button>
+            <button class="btn" id="buyItem2">⚡ Перчатки скорости (+2 к клику) — 30 монет</button>
+            <div id="shopMessage"></div>
+        </div>
+    </div>
+
+    <!-- Навигация -->
+    <div class="tab-buttons">
+        <div class="tab-button" onclick="showTab('tab-main')">🏠 Главная</div>
+        <div class="tab-button" onclick="showTab('tab-bosses')">⚔️ Боссы</div>
+        <div class="tab-button" onclick="showTab('tab-shop')">🛒 Магазин</div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+
+        const user = tg.initDataUnsafe.user;
+        const userId = user ? user.id : "guest";
+
+        let balance = parseInt(localStorage.getItem(`balance_${userId}`)) || 0;
+        let clickValue = parseInt(localStorage.getItem(`clickValue_${userId}`)) || 1;
+        let level = parseInt(localStorage.getItem(`level_${userId}`)) || 1;
+
+        function updateBalance() {
+            document.getElementById('balance').textContent = balance;
+            document.getElementById('level').textContent = level;
+        }
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active-tab'));
+            document.getElementById(tabId).classList.add('active-tab');
+        }
+
+        document.getElementById('clicker').addEventListener('click', () => {
+            balance += clickValue;
+            updateBalance();
+        });
+
+        document.getElementById('fightBoss1').addEventListener('click', () => {
+            if (balance >= 10) {
+                balance -= 10;
+                updateBalance();
+                document.getElementById('bossResult').textContent = "🎉 Вы победили дракона!";
+            } else {
+                document.getElementById('bossResult').textContent = "❌ Недостаточно монет!";
+            }
+        });
+
+        document.getElementById('buyItem1').addEventListener('click', () => {
+            if (balance >= 20) {
+                balance -= 20;
+                updateBalance();
+                document.getElementById('shopMessage').textContent = "✅ Куплено: Зелье силы!";
+            } else {
+                document.getElementById('shopMessage').textContent = "❌ Недостаточно монет!";
+            }
+        });
+
+        document.getElementById('save').addEventListener('click', () => {
+            localStorage.setItem(`balance_${userId}`, balance);
+            localStorage.setItem(`clickValue_${userId}`, clickValue);
+            alert("💾 Прогресс сохранен!");
+        });
+
+        updateBalance();
+        tg.ready();
     </script>
 </body>
 </html>
